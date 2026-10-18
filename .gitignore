@@ -1,4 +1,30 @@
-# Documentos del proyecto
+# Virtual Environments
+.venv/
+env/
+venv/
+ENV/
+
+# Results
+Results */
+Results*/
+
+# Superseeded Files
+ss/
+
+# Data and documents
+Data/
+*.parquet
+*.qmd
 *.docx
 *.xlsx
 *.pdf
+
+# Python cache
+__pycache__/
+*.pyc
+
+# OS generated files
+.DS_Store
+
+#Html files
+*.html
