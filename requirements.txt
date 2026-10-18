@@ -1,0 +1,8 @@
+pandas
+pyspainmobility
+certifi
+pyarrow
+fastparquet
+geopandas>=0.14
+numpy
+pytest
