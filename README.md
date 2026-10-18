@@ -59,15 +59,20 @@ python Scripts\od_matrix_v3.py `
   --end-date 2024-03-14 `
   --output-dir "$PWD\Results\2024-03-14" `
   --project-municipality 19086 `
-  --no-skim `
-  --no-spatial
+  --no-skim
 ```
 
 Use an absolute output path: `pyspainmobility` resolves relative download-cache
-paths under the user's home directory. This command writes only the total OD
-matrix, flow list, and metadata; it does not request income, age, gender,
-activity splits, daily/hourly slices, a distance skim, or a second spatial
-zoning export. MITMA data and zone-relation downloads require internet access.
+paths under the user's home directory. This command writes the total OD
+matrix, flow list, metadata, and one spatial export (`zoning.shp` with its
+shapefile sidecars, plus `zoning.geojson`). It does not request income, age,
+gender, activity splits, daily/hourly slices, or a distance skim. The spatial
+exports contain a `zone_id` field whose values are the polygon-backed IDs used
+in the matrix and in the `origin_zone`/`dest_zone` columns of `od_flows.csv`;
+`REST_PENINSULA` and `INTERNATIONAL` are special flow zones without polygons in
+this custom N-211 zoning. After the OD results are written, the two raw trip
+Parquets downloaded into the results folder are removed to save space.
+MITMA data and zone-relation downloads require internet access.
 
 Generate a zoning-only preview (no OD matrix required) with:
 
@@ -102,7 +107,10 @@ municipalities. The adjacent municipality IDs are `19053_AM`, `19103_AM`,
 `19190`, `19245_AM`, `19257_AM`, `42025_AM`, `42035_AM`, `50034_AM`, and
 `50159_AM`. The matrix builder maps each source unit through the MITMA zone
 relation; for this run the metadata reports zero unmapped rows.
-Social, activity, time-slice, and skim outputs are not generated.
+All 18 polygon IDs occur in the matrix and are stored in `zoning.shp`'s
+`zone_id` field. `od_flows.csv` is sparse and contains only non-zero OD pairs;
+`19103_AM` has zero row and column totals for this date, so it has no flow
+records. Social, activity, time-slice, and skim outputs are not generated.
 
 ### Internal trips and matrix diagonals
 

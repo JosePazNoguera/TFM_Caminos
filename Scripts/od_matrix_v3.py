@@ -856,7 +856,7 @@ def _export_spatial_zoning(parquet_path: str, output_dir: str) -> None:
     shp_path = out_dir / f"{SPATIAL_ZONING_STEM}.shp"
     try:
         dissolved.to_file(shp_path, driver="ESRI Shapefile")
-        print(f"  ↳ Spatial zoning (shapefile) saved to: {shp_path}")
+        print(f"  -> Spatial zoning (shapefile) saved to: {shp_path}")
     except Exception as e:
         print(f"  [warn] Failed to write spatial zoning shapefile: {e}")
 
@@ -867,7 +867,7 @@ def _export_spatial_zoning(parquet_path: str, output_dir: str) -> None:
         if dissolved.crs is not None and dissolved.crs.to_epsg() != 4326:
             geojson_gdf = dissolved.to_crs(epsg=4326)
         geojson_gdf.to_file(geojson_path, driver="GeoJSON")
-        print(f"  ↳ Spatial zoning (GeoJSON) saved to: {geojson_path}")
+        print(f"  -> Spatial zoning (GeoJSON) saved to: {geojson_path}")
     except Exception as e:
         print(f"  [warn] Failed to write spatial zoning GeoJSON: {e}")
 
@@ -1030,6 +1030,7 @@ def build_od_from_parquet(
                 zone_order_full=zone_order_full,
             )
 
+    del ctx, df_dist_mapped, df_muni_mapped
     _cleanup_raw_downloads(output_dir)
 
     return od_long
@@ -1195,7 +1196,18 @@ def _cleanup_raw_downloads(output_dir: str) -> None:
             try:
                 f.unlink(missing_ok=True)
             except Exception as e:
-                print(f"  ↳ Could not delete {f.name}: {e}")
+                print(f"  Could not delete {f.name}: {e}")
+
+    if (out_dir / "od_matrix.csv").is_file() and (out_dir / "od_flows.csv").is_file():
+        for pattern in (
+            "Viajes_distritos_*_v2.parquet",
+            "Viajes_municipios_*_v2.parquet",
+        ):
+            for parquet_path in out_dir.glob(pattern):
+                try:
+                    parquet_path.unlink()
+                except Exception as e:
+                    print(f"  Could not delete {parquet_path.name}: {e}")
 
 # ---------------------------------------------------------------------------
 # Helpers used by the integration test suite
